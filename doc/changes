@@ -1,3 +1,4 @@
+Changes:
  - implemented 'default' and 'nothing' variables
  - Added tal:evaluate statement.
  - Fixed bug(?) wherein variables used in a tal:repeat would clobber
@@ -23,3 +24,16 @@ New in 0.9.3
  - Added xercesImpl to lib as it is a dependency of nekohtml.  This didn't 
    become a problem until I upgraded to ant 1.6.2.  Previous versions of ant 
    must have included xerces in the classpath.
+
+New in 1.7
+ - Migrated build infrastructure to Maven 2, which provides:.
+   project reports for Cobertura code coverage, Find Bugs static analysis, Taglists, and Javadocs.
+   Maven will also make it easy to test, version and publish any updates to the core libraries.
+ - Updated the XML document to use JDOM, updated the StAX parser to use a JDOM developer code.
+ - Updated the parser to use Woodstox.
+ - Updated the expression language handling to use the MVEL expression language.
+ - Updated the logging to use SLF4J - Simple Logging Framework For Java
+ - Refactored the PageTemplateImpl example to provide a Builder class to guide users.
+ - Updated the units tests to use Junit annotations.
+ - Rewrote/arranged the unit tests so they could be more readable & easily referenced
+   by someone trying to use JPT.

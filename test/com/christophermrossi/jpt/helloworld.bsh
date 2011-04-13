@@ -1,4 +1,0 @@
-// An extremely stupid test case
-hello = "Hello";
-world = "World";
-return hello + " " + world + "!";
