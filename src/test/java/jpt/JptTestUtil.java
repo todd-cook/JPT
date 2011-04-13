@@ -19,10 +19,14 @@
 
 package jpt;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -41,6 +45,8 @@ import java.util.Map;
  * @version Revision: 1.7
  */
 public class JptTestUtil {
+    protected static Logger LOG = LoggerFactory.getLogger (JptTestUtil.class);
+
     public static final String startTag = "<html xmlns:tal=\"" + Constants.TAL_NAMESPACE_URI + "\">";
     public static final String endTag = "</html>";
     /**
@@ -123,7 +129,7 @@ public class JptTestUtil {
 
     protected void showTransformation (String start, String finish) {
         if (SHOW_TRANSFORMATIONS) {
-            System.out.println(removeAllBreaks(start) + "\n becomes \n" + removeAllBreaks(finish));
+            LOG.info ( removeAllBreaks (start) + "\n becomes \n" + removeAllBreaks (finish));
         }
 
         if (WRITE_FILES) {
@@ -133,11 +139,11 @@ public class JptTestUtil {
             String fileTwo = tmpDir + timestamp + "_1b.html";
             try {
                 BufferedWriter fOne = new BufferedWriter(new FileWriter(fileOne));
-                System.out.println("Writing file: " + fileOne);
+                LOG.info  ("Writing file: " + fileOne);
                 fOne.write(start);
                 fOne.close();
                 BufferedWriter fTwo = new BufferedWriter(new FileWriter(fileTwo));
-                System.out.println("Writing file: " + fileTwo);
+                LOG.info  ("Writing file: " + fileTwo);
                 fTwo.write(finish);
                 fTwo.close();
             }
@@ -151,30 +157,4 @@ public class JptTestUtil {
         text = text.replaceAll("\n", "");
         return text.replaceAll("\r", "");
     }
-
-    /**
-     * Used below to show how JPT gets data from bean-like objects;
-     * note: setters not required
-     */
-    class Friend {
-        public int getNumber () {
-            return 5;
-        }
-    }
-
-    class TestBean {
-        private Friend friend = new Friend();
-
-        public String getFavoriteColor () {
-            return "red";
-        }
-
-        public Friend getFriend () {
-            return friend;
-        }
-
-        // note: public member variables not accessible to JPT; need a getter
-        public int id = 123456;
-    }
-
 }

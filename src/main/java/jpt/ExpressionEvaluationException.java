@@ -57,8 +57,7 @@ public class ExpressionEvaluationException extends PageTemplateException {
 
     @Override
     public String toString () {
-        return "ExpressionEvaluationException{" +
-            "expression='" + expression + '\'' +
-            '}';
+        return "ExpressionEvaluationException{ message: " + super.getMessage()
+            + " expression='" + expression + '\'' + '}';
     }
 }

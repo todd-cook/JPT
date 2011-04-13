@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.StringReader;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 /**
@@ -56,14 +57,14 @@ public class MiscellaneousTests extends JptTestUtil {
         assertNotNull(hf.toString());
         try {
             assertNotNull(hf.getXhtml());
+            assertTrue(templateText.equals(hf.getXhtml()));
+
         }
         catch (PageTemplateException e) {
             e.printStackTrace();
             fail();
         }
-        //assertTrue (!templateText.equals (result));
-        // showTransformation (templateText, result);
-        // String trueResult = "<html><p> 9 9</p><p> 1 5</p><p> 20 20</p><p> 23 23</p><p> 2 2</p></html>";
-        // assertTrue (trueResult.equals (removeAllBreaks (result)));
+        assertTrue(templateText.equals(hf.getHtml()));
+        assertTrue(templateText.equals(hf.toString()));
     }
 }

@@ -28,6 +28,9 @@ import java.util.Map;
 import static org.junit.Assert.assertTrue;
 
 /**
+ * A unit test designed to be read; everything should be:
+ * right on the screen, easy to follow--as much as possible.
+ *
  * @author Chris Rossi
  * @author Todd Cook
  * @version Revision: 1.7
@@ -44,6 +47,42 @@ public class ExpressionsTest extends JptTestUtil {
         assertTrue(trueResult.equals(removeAllBreaks(result)));
     }
 
+    /**
+     * Used below to show how JPT gets data from bean-like objects;
+     * note: setters not required
+     */
+    class Friend {
+        public Map<String, Object> map = new HashMap<String, Object>();
+
+        Friend () {
+            map.put("what", false);
+        }
+
+        public Map<String, Object> getMap () {
+            return map;
+        }
+
+        public int getNumber () {
+            return 5;
+        }
+
+    }
+
+    class TestBean {
+        private Friend friend = new Friend();
+
+        public String getFavoriteColor () {
+            return "red";
+        }
+
+        public Friend getFriend () {
+            return friend;
+        }
+
+        // note: public member variables not accessible to JPT; need a getter
+        public int id = 123456;
+    }
+
     @Test
     public void beanValuesInsertion () {
         String templateText = startTag +
@@ -52,7 +91,8 @@ public class ExpressionsTest extends JptTestUtil {
         String result = processTemplate(templateText, new TestBean(), null);
         assertTrue(!templateText.equals(result));
         showTransformation(templateText, result);
-        String trueResult = "<html><p>here/favoriteColor should be <b>red</b></p><p>here/friend/number should be <div>5</div></p></html>";
+        String trueResult = "<html><p>here/favoriteColor should be <b>red</b></p>" +
+            "<p>here/friend/number should be <div>5</div></p></html>";
         assertTrue(trueResult.equals(removeAllBreaks(result)));
     }
 
@@ -77,7 +117,8 @@ public class ExpressionsTest extends JptTestUtil {
         String result = processTemplate(templateText, null, dictionary);
         assertTrue(!templateText.equals(result));
         showTransformation(templateText, result);
-        String trueResult = "<html><p>favoriteColor should be <b><a href=\"www.red.com\">red site</a></b></p><p>friend should be <div><a href=\"www.banksy.com\">banksy site</a></div></p></html>";
+        String trueResult = "<html><p>favoriteColor should be <b><a href=\"www.red.com\">red site</a></b></p>" +
+            "<p>friend should be <div><a href=\"www.banksy.com\">banksy site</a></div></p></html>";
         assertTrue(trueResult.equals(removeAllBreaks(result)));
     }
 
@@ -166,6 +207,7 @@ public class ExpressionsTest extends JptTestUtil {
     @Test
     public void objectMethodExceptionSwallowing () {
         String templateText = startTag + "<p>1024 / 0 = <span tal:replace=\"here/divide ( here/getX(), 0)\">a number</span></p>\n" + endTag;
+        LOG.info("NOTE: the following stack trace is expected:");
         String result = processTemplate(templateText, new MyMath(), null);
         assertTrue(!templateText.equals(result));
         showTransformation(templateText, result);
@@ -173,11 +215,36 @@ public class ExpressionsTest extends JptTestUtil {
         assertTrue(trueResult.equals(removeAllBreaks(result)));
     }
 
+    class Enemy {
+        Map<String, Object> space = new HashMap<String, Object>();
+
+        Enemy () {
+            space.put("cowboy", "");
+        }
+
+        public Map<String, Object> getSpace () {
+            return space;
+        }
+    }
+
     class ProvidedObject {
         private Map<String, Object> map = new HashMap<String, Object>();
 
+        private Friend friend = new Friend();
+
+        public Friend getFriend () {
+            return friend;
+        }
+
+        private Enemy enemy = new Enemy();
+
+        public Enemy getEnemy () {
+            return enemy;
+        }
+
         ProvidedObject () {
-            map.put("friend", "Todd");
+            map.put("friend", "kevin");
+            //     map.put( "enemy", "mc2" );
             map.put("hello", "ninety nine");
         }
 
@@ -195,7 +262,8 @@ public class ExpressionsTest extends JptTestUtil {
         String result = processTemplate(templateText, new ProvidedObject(), null);
         assertTrue(!templateText.equals(result));
         showTransformation(templateText, result);
-        String trueResult = "<html><p>here/map/friend should be Todd</p><p>here/map/friend/length() should be 4</p><p>here/map/dummy should be </p><p>here/map/hello should be ninety nine</p></html>";
+        String trueResult = "<html><p>here/map/friend should be kevin</p><p>here/map/friend/length() should be 5</p>" +
+            "<p>here/map/dummy should be </p><p>here/map/hello should be ninety nine</p></html>";
         assertTrue(trueResult.equals(removeAllBreaks(result)));
     }
 
@@ -207,7 +275,9 @@ public class ExpressionsTest extends JptTestUtil {
         String result = processTemplate(templateText, new ProvidedObject(), null);
         assertTrue(!templateText.equals(result));
         showTransformation(templateText, result);
-        String trueResult = "<html><p>exists:here should be true</p><p>exists:here/map/friend should be true</p><p>exists:here/map/enemy should be false</p></html>";
+        String trueResult = "<html><p>exists:here should be true</p>" +
+            "<p>exists:here/map/friend should be true</p>" +
+            "<p>exists:here/map/enemy should be false</p></html>";
         assertTrue(trueResult.equals(removeAllBreaks(result)));
     }
 
@@ -217,7 +287,7 @@ public class ExpressionsTest extends JptTestUtil {
         String result = processTemplate(templateText, new ProvidedObject(), null);
         assertTrue(!templateText.equals(result));
         showTransformation(templateText, result);
-        String trueResult = "<html><p>not:here/friend/map/what should be </p></html>";
+        String trueResult = "<html><p>not:here/friend/map/what should be true</p></html>";
         assertTrue(trueResult.equals(removeAllBreaks(result)));
     }
 
@@ -252,7 +322,9 @@ public class ExpressionsTest extends JptTestUtil {
         String result = processTemplate(templateText, new MyMath(), dictionary);
         assertTrue(!templateText.equals(result));
         showTransformation(templateText, result);
-        String trueResult = "<html><p>string: should be </p><p>string:hello should be hello</p><p>string:www.${opinions}.org should be www.everybodysgotone.org</p><p>string:give me $$${helper/friend/number} or else should be give me $6 or else!</p></html>";
+        String trueResult = "<html><p>string: should be </p><p>string:hello should be hello</p>" +
+            "<p>string:www.${opinions}.org should be www.everybodysgotone.org</p>" +
+            "<p>string:give me $$${helper/friend/number} or else should be give me $6 or else!</p></html>";
         assertTrue(trueResult.equals(removeAllBreaks(result)));
     }
 
@@ -281,8 +353,23 @@ public class ExpressionsTest extends JptTestUtil {
         String result = processTemplate(templateText, new StructuredText(), null);
         assertTrue(!templateText.equals(result));
         showTransformation(templateText, result);
-        String trueResult = "<html><p>escaped: &lt;b>The cabinet&lt;/b> has &lt;i>usurped&lt;/i> the authority of the &lt;h3>president&lt;/h3></p><p>escaped: &lt;b>The cabinet&lt;/b> has &lt;i>usurped&lt;/i> the authority of the &lt;h3>president&lt;/h3></p><p>escapedx: &lt;b>The cabinet&lt;/b> has &lt;i>usurped&lt;/i> the authority of the &lt;h3>president&lt;/h3></p><p>structured: <b>The cabinet</b> has <i>usurped</i> the authority of the <h3>president</h3></p><p>structured: <b>The cabinet</b> has <i>usurped</i> the authority of the <h3>president</h3></p><p>structured2: <b>The cabinet</b> has <i>usurped</i> the authority of the <h3>president</h3></p></html>";
+        String trueResult = "<html><p>escaped: &lt;b>The cabinet&lt;/b> has &lt;i>usurped&lt;/i> the authority of the &lt;h3>president&lt;/h3></p>" +
+            "<p>escaped: &lt;b>The cabinet&lt;/b> has &lt;i>usurped&lt;/i> the authority of the &lt;h3>president&lt;/h3></p>" +
+            "<p>escapedx: &lt;b>The cabinet&lt;/b> has &lt;i>usurped&lt;/i> the authority of the &lt;h3>president&lt;/h3></p>" +
+            "<p>structured: <b>The cabinet</b> has <i>usurped</i> the authority of the <h3>president</h3></p>" +
+            "<p>structured: <b>The cabinet</b> has <i>usurped</i> the authority of the <h3>president</h3></p>" +
+            "<p>structured2: <b>The cabinet</b> has <i>usurped</i> the authority of the <h3>president</h3></p></html>";
         assertTrue(trueResult.equals(removeAllBreaks(result)));
+    }
+
+    class DataObject3 {
+        public String getFriend () {
+            return "Albert";
+        }
+
+        public Object getEnemy () {
+            return null;
+        }
     }
 
     @Test
@@ -291,33 +378,66 @@ public class ExpressionsTest extends JptTestUtil {
             "<p>null: <span tal:replace=\"here/enemy | string:no enemies\">any enemies?</span></p>\n" +
             "<p>no such path: <span tal:replace=\"here/enemy/space/cowboy | string:no space for cowboys\">any space for cowboys?</span></p>\n" +
             "<p>both: <span tal:replace=\"here/enemy | here/enemy/space/cowboy | here/friend\">anybody?</span></p>" + endTag;
-        String result = processTemplate(templateText, new ProvidedObject(), null);
+        String result = processTemplate(templateText, new DataObject3(), null);
         assertTrue(!templateText.equals(result));
         showTransformation(templateText, result);
-        String trueResult = "<html><p>use first path: </p><p>null: </p><p>no such path: </p><p>both: </p></html>";
+        String trueResult = "<html><p>use first path: Albert</p>" +
+            "<p>null: no enemies</p>" +
+            "<p>no such path: no space for cowboys</p>" +
+            "<p>both: Albert</p></html>";
         assertTrue(trueResult.equals(removeAllBreaks(result)));
     }
 
-    //TODO find or create a good simple example of path token indirection
+    class Stuff {
+        Map<String, Object> map = new HashMap<String, Object>();
+
+        public Map<String, Object> getMap () {
+            return map;
+        }
+
+        Stuff () {
+            map.put("friend", "kevin");
+        }
+    }
+
+    class PathTokenIndirectionObject {
+        public Stuff getFriend () {
+            return new Stuff();
+        }
+    }
+
+    @Test
     public void PathTokenIndirection () {
         String templateText = startTag + "<p>a friend of a friend: <span tal:replace=\"here/?acquaintance/map/friend\">friend</span></p>" + endTag;
         Map<String, Object> dictionary = new HashMap<String, Object>();
         dictionary.put("acquaintance", "friend");
-        String result = processTemplate(templateText, new ProvidedObject(), dictionary);
+        String result = processTemplate(templateText, new PathTokenIndirectionObject(), dictionary);
         assertTrue(!templateText.equals(result));
         showTransformation(templateText, result);
-        String trueResult = "";
-        // assertTrue (trueResult.equals (removeAllBreaks (result)));
+        String trueResult = "<html><p>a friend of a friend: kevin</p></html>";
+        assertTrue(trueResult.equals(removeAllBreaks(result)));
+    }
+
+    class NumberFriend {
+        public int getNumber () {
+            return 5;
+        }
+    }
+
+    class FunWithClassesObject {
+        public NumberFriend getFriend () {
+            return new NumberFriend();
+        }
     }
 
     @Test
     public void FunWithClasses () {
         String templateText = startTag + "<p>number instanceof Integer: <span tal:replace=\"java.lang.Integer.class/isInstance( here/friend/number )\">should be</span></p>\n" +
             "<p>categorically false: <span tal:replace=\"java.lang.Integer.class/isAssignableFrom( java.lang.String.class )\">i don't think so</span></p>" + endTag;
-        String result = processTemplate(templateText, new MyMath(), null);
+        String result = processTemplate(templateText, new FunWithClassesObject(), null);
         assertTrue(!templateText.equals(result));
         showTransformation(templateText, result);
-        String trueResult = "<html><p>number instanceof Integer: </p><p>categorically false: false</p></html>";
+        String trueResult = "<html><p>number instanceof Integer: true</p><p>categorically false: false</p></html>";
         assertTrue(trueResult.equals(removeAllBreaks(result)));
     }
 
