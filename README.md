@@ -16,9 +16,9 @@ JPT/ZPT compared to XSLT:
 
 Some links
 ==========
-    [Zope Homepage](http://www.zope.org/)
-    [An introduction to ZPT](http://zope.org/Documentation/Books/ZopeBook/2_6Edition/ZPT.stx)
-    [The ZPT reference](http://www.zope.org/Documentation/Books/ZopeBook/2_6Edition/AppendixC.stx)
+* `[Zope Homepage](http://www.zope.org/)`
+* `[An introduction to ZPT](http://zope.org/Documentation/Books/ZopeBook/2_6Edition/ZPT.stx)`
+* `[The ZPT reference](http://www.zope.org/Documentation/Books/ZopeBook/2_6Edition/AppendixC.stx)`
 
 One of the ways JPT is powerful is in it's simplicity; the context against which the template is processed may be any arbitrary Java object. 
 A path in a path expression corresponds to a traversal of that object's properties and methods, found using bean introspection and reflection respectively. 
